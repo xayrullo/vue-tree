@@ -1,9 +1,52 @@
 <script setup lang="ts">
+import { ref } from 'vue'
 import { RouterLink, RouterView } from 'vue-router'
 import HelloWorld from './components/HelloWorld.vue'
+import TreeView from './components/TreeView.vue'
+import type { TreeNode } from '@/types/TreeNode'
+
+const nodes = ref<TreeNode[]>([
+  {
+    id: 1,
+    label: 'Colors',
+    children: [
+      {
+        id: 2,
+        label: 'Red'
+      },
+      {
+        id: 3,
+        label: 'White',
+        children: [
+          {
+            id: 4,
+            label: 'White-Gray'
+          },
+          {
+            id: 5,
+            label: 'White-Red'
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id: 6,
+    label: 'People'
+  }
+])
+const selectedItems = ref<TreeNode>()
 </script>
 
 <template>
+  <div>
+    <TreeView
+      :nodes="nodes"
+      v-model="selectedItems"
+      caption-field="name"
+      children-field="fileList"
+    />
+  </div>
   <header>
     <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
 
