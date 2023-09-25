@@ -1,19 +1,4 @@
 import type { TreeNode } from '@/types/TreeNode.ts'
-export const updateNodes = (nodes: TreeNode[]) =>
-  nodes.map((node) => {
-    if (!node.children?.length) {
-      return { ...node, expanded: false }
-    }
-    node.children = updateNodes(node.children)
-    const everyChecked = node.children?.every((item) => item.checked)
-    const someChecked = node.children?.some((item) => item.checked)
-    const anyDeteminate = node.children?.some((item) => item.indeterminate)
-    node.checked = everyChecked
-    node.indeterminate = !everyChecked && (someChecked || anyDeteminate)
-
-    return node
-  })
-
 export const initNodes = (nodes: TreeNode[], parent?: TreeNode) => {
   let newNodes = [...nodes]
 
@@ -111,12 +96,24 @@ export const setNodeById = (nodes: TreeNode[], id: number | string, newNode: Tre
 
     return node
   })
+export const updateNodes = (nodes: TreeNode[]) =>
+  nodes.map((node) => {
+    if (!node.children?.length) {
+      return { ...node, expanded: false }
+    }
+    node.children = updateNodes(node.children)
+    const everyChecked = node.children?.every((item) => item.checked)
+    const someChecked = node.children?.some((item) => item.checked)
+    const anyDeteminate = node.children?.some((item) => item.indeterminate)
+    node.checked = everyChecked
+    node.indeterminate = !everyChecked && (someChecked || anyDeteminate)
+
+    return node
+  })
 
 export function updateChildNodeStatus(node: TreeNode, checkedStatus?: boolean) {
   const checked = checkedStatus ?? node.checked
-  console.log('Update child node status', node,)
   node.checked = checked
-
   if (node && Array.isArray(node.children)) {
     node.children = node.children.map((item) => {
       const currentNode = {
@@ -133,7 +130,6 @@ export function updateChildNodeStatus(node: TreeNode, checkedStatus?: boolean) {
       return currentNode
     })
   }
-
   return node
 }
 

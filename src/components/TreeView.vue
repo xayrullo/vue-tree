@@ -115,15 +115,13 @@ const setNode = (id: number | string, node: TreeNode) => {
 }
 
 const updateNode = (id: number | string, data: TreeNode) => {
-  console.log('Update node', data, id)
-  console.log('')
   emits('update:nodes', updateNodes(updateNodeById(props.nodes, id, data)))
 }
 
 const onToggleCheckbox = (node: TreeNode) => {
-  const checked = !node.checked
-  updateNode(node.id, { checked, ...node })
-  emits('nodeClick', { ...node, checked })
+  node.checked = !node.checked
+  updateNode(node.id, node)
+  emits('nodeClick', node)
 }
 
 const onNodeClick = (node: TreeNode) => {

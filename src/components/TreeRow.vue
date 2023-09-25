@@ -184,19 +184,14 @@ const removedRow = (node: TreeNode) => {
 <style lang="scss">
 .tree-list,
 .tree-row {
-  display: grid;
-  margin: 0;
-  padding: 0;
+  @apply grid m-0 p-0
 }
 
 .tree-row {
   transform-style: preserve-3d;
 
   &-item {
-    display: flex;
-    align-items: center;
-    position: relative;
-    padding: 5px 10px;
+    @apply flex items-center relative px-1 py-3;
 
     &:hover:before {
       content: '';
