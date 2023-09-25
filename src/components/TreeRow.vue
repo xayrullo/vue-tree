@@ -1,4 +1,4 @@
-<!-- <template>
+<template>
   <li
     class="tree-row"
     :style="{
@@ -41,12 +41,12 @@
       <span class="tree-row-txt">
         {{ node.label }}
       </span>
-      <template v-if="childCount && showChildCount">
+      <template v-if="childCount">
         <slot
           name="childCount"
           :count="childCount"
           :checkedCount="checkedChildCount"
-          :childs="node.children"
+          :children="node.children"
         >
           <span class="child-count">
             {{ childCount }}
@@ -73,7 +73,7 @@
           :show-child-count="showChildCount"
           :gap="gap"
           :expand-row-by-default="expandRowByDefault"
-          :indent-size="size"
+          :size="size"
           :row-hover-background="rowHoverBackground"
           :set-node="setNode"
           :get-node="getNode"
@@ -84,8 +84,8 @@
           @toggle-checkbox="onToggleCheckbox"
           @node-expanded="onNodeExpanded"
         >
-          <template #childCount="{ count, checkedCount, childs }">
-            <slot name="childCount" :count="count" :checked-count="checkedCount" :childs="childs" />
+          <template #childCount="{ count, checkedCount, children }">
+            <slot name="childCount" :count="count" :checked-count="checkedCount" :childs="children" />
           </template>
           <template #iconActive>
             <slot name="iconActive">
@@ -122,7 +122,7 @@ import { computed, nextTick } from 'vue'
 import IconArrowRight from '@/components/icons/IconArrowRight.vue'
 import IconArrowDown from './icons/IconArrowDown.vue'
 import IconDelete from './icons/IconDelete.vue'
-import { TreeNode } from '@/types/TreeNode'
+import type { TreeNode } from '@/types/TreeNode'
 
 interface IProps {
   node: TreeNode
@@ -141,7 +141,7 @@ interface IProps {
 }
 const props = withDefaults(defineProps<IProps>(), {
   expandRowByDefault: false,
-  useCheckbox: false,
+  useCheckbox: true,
   useIcon: true,
   useRowDelete: false,
   showChildCount: false,
@@ -168,7 +168,7 @@ const handleClick = (node: TreeNode, passExpand?: boolean) => {
   emits('nodeClick', { ...node })
 }
 
-const onNodeExpanded = (node: TreeNode, state) => {
+const onNodeExpanded = (node: TreeNode, state: boolean) => {
   emits('nodeExpanded', node, state)
 }
 
@@ -243,4 +243,4 @@ const removedRow = (node: TreeNode) => {
     user-select: none;
   }
 }
-</style> -->
+</style>

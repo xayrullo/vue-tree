@@ -1,4 +1,4 @@
-<!-- <template>
+<template>
   <div class="tree">
     <ul class="tree-list" :style="{ gap: `${gap}px` }">
       <template v-for="node in filteredData" :key="node.id">
@@ -10,7 +10,7 @@
           :use-icon="useIcon"
           :use-row-delete="useRowDelete"
           :show-child-count="showChildCount"
-          :indent-size="indentSize"
+          :size="size"
           :gap="gap"
           :row-hover-background="rowHoverBackground"
           :set-node="setNode"
@@ -40,8 +40,8 @@
           <template v-if="useRowDelete" #deleteIcon>
             <slot name="deleteIcon" />
           </template>
-          <template v-if="showChildCount" #childCount="{ count, checkedCount, childs }">
-            <slot name="childCount" :count="count" :checked-count="checkedCount" :childs="childs" />
+          <template v-if="showChildCount" #childCount="{ count, checkedCount, children }">
+            <slot name="childCount" :count="count" :checked-count="checkedCount" :children="children" />
           </template>
         </tree-row>
       </template>
@@ -52,8 +52,17 @@
 <script lang="ts" setup>
 import { onMounted, computed } from 'vue'
 import TreeRow from './TreeRow.vue'
-import { TreeNode } from '@/types/TreeNode'
-
+import type { TreeNode } from '@/types/TreeNode'
+import {
+  initNodes,
+  searchNodes,
+  setNodeById,
+  getNodeById,
+  updateNodeById,
+  updateNodes,
+  removeNodeById,
+  expandNodeWithChildren
+} from '../utils'
 interface IProps {
   nodes: TreeNode[]
   props?: TreeNode
@@ -65,17 +74,7 @@ interface IProps {
   useCheckbox?: boolean
   useIcon?: boolean
   useRowDelete?: boolean
-  showChildCount?: booleanuseCheckbox?: boolean
-  useIcon?: boolean
-  const props = withDefaults(defineProps<IProps>(), {
-  expandRowByDefault: false,
-  useCheckbox: false,
-  useIcon: true,
-  useRowDelete: false,
-  showChildCount: false,
-  rowHoverBackground: '#e0e0e0',
-  expandable: true
-})
+  showChildCount?: boolean
   rowHoverBackground?: string
   expandable?: boolean
 }
@@ -84,14 +83,14 @@ const props = withDefaults(defineProps<IProps>(), {
   gap: 10,
   searchText: '',
   expandRowByDefault: false,
-  expandAllRowsOnSearch: true,
-  useCheckbox: false,
+  useCheckbox: true,
   useIcon: true,
   useRowDelete: false,
   showChildCount: false,
   rowHoverBackground: '#e0e0e0',
   expandable: true
 })
+
 const emits = defineEmits(['nodeClick', 'nodeExpanded', 'checkboxToggle', 'update:nodes'])
 onMounted(() => emits('update:nodes', initNodes(props.nodes)))
 
@@ -102,26 +101,28 @@ const filteredData = computed(() => {
     newData = searchNodes(props.nodes, props.searchText)
 
     if (props.expandAllRowsOnSearch) {
-      newData.forEach(expandNodeWithChilds)
+      newData.forEach(expandNodeWithChildren)
     }
   }
 
   return updateNodes(newData)
 })
 
-const getNode = (id) => getNodeById(props.nodes, id)
+const getNode = (id: number | string) => getNodeById(props.nodes, id)
 
-const setNode = (id, node) => {
+const setNode = (id: number | string, node: TreeNode) => {
   emits('update:nodes', setNodeById(props.nodes, id, node))
 }
 
-const updateNode = (id, data) => {
+const updateNode = (id: number | string, data: TreeNode) => {
+  console.log('Update node', data, id)
+  console.log('')
   emits('update:nodes', updateNodes(updateNodeById(props.nodes, id, data)))
 }
 
-const onToggleCheckbox = (node) => {
+const onToggleCheckbox = (node: TreeNode) => {
   const checked = !node.checked
-  updateNode(node.id, { checked })
+  updateNode(node.id, { checked, ...node })
   emits('nodeClick', { ...node, checked })
 }
 
@@ -129,7 +130,7 @@ const onNodeClick = (node: TreeNode) => {
   emits('nodeClick', node)
 }
 
-const onNodeExpanded = (node, state) => {
+const onNodeExpanded = (node: TreeNode, state: boolean) => {
   emits('nodeExpanded', node, state)
 }
 
@@ -137,7 +138,7 @@ const onUpdate = () => {
   emits('update:nodes', props.nodes)
 }
 
-const onDeleteRow = (node) => {
+const onDeleteRow = (node: TreeNode) => {
   removeNodeById(props.nodes, node.id)
   emits('update:nodes', updateNodes(removeNodeById(props.nodes, node.id)))
 }
@@ -158,4 +159,4 @@ const onDeleteRow = (node) => {
     padding-left: 0px !important;
   }
 }
-</style> -->
+</style>

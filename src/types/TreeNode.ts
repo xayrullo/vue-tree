@@ -6,4 +6,5 @@ export type TreeNode = {
   children?: TreeNode[]
   hidden?: boolean
   undeletable?: boolean
+  indeterminate?: boolean
 }
